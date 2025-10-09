@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voicera.io – Web App Intern Assessment
 
-## Getting Started
+This project is a **small assessment application** for the **Web App Intern position** at [Voicera.io](https://voicera.io), developed by **Adrián Leiva**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 💡 Project Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This web app demonstrates my ability to build **interactive and responsive applications** using modern web technologies.  
+It integrates **AI-based facial analysis** for **both uploaded images and live webcam video**, showcasing skills in:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- React & Next.js development  
+- TypeScript for type-safe code  
+- Tailwind CSS for responsive styling  
+- Handling user inputs with drag-and-drop image uploads  
+- Real-time **facial detection, landmarks, and expression recognition**  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🚀 Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Drag & Drop Image Upload:** Upload images via drag-and-drop or file picker  
+- **Image Preview:** See the uploaded image before analysis  
+- **Face Detection in Images:** Detect faces and display the dominant expression  
+- **Real-Time Webcam Face Detection:** Detect faces, landmarks, and expressions live  
+- **Canvas Overlay:** Draw bounding boxes, landmarks, and expression labels on video  
+- **Error Handling:** Validate file type and maximum size (5 MB)  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠 Tech Stack
 
-## Deploy on Vercel
+- **React / Next.js** – frontend framework  
+- **TypeScript** – type-safe development  
+- **Tailwind CSS** – responsive styling  
+- **face-api.js** – facial detection and expression recognition  
+- **TensorFlow.js** – backend for real-time facial analysis  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔗 Links
+
+- **GitHub:** [github.com/adrianl01](https://github.com/adrianl01)  
+- **Portfolio:** [adrianl-dev.vercel.app](https://adrianl-dev.vercel.app/)
+
+
