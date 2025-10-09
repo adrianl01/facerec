@@ -23,9 +23,8 @@ export default function ImageDropzone() {
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
           faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
         ]);
-        console.log("✅ Modelos FaceAPI cargados");
       } catch (err) {
-        console.error("Error al cargar modelos:", err);
+        console.error("Error loading models:", err);
       }
     }
     loadModels();
@@ -58,7 +57,7 @@ export default function ImageDropzone() {
       setDetections(detections);
     } catch (err) {
       console.error(err);
-      setError("No se pudo analizar la imagen.");
+      setError("Unable to analyze image.");
     } finally {
       setLoading(false);
     }
@@ -155,7 +154,7 @@ export default function ImageDropzone() {
           />
           <button
             onClick={removeImage}
-            className="bg-red-500 text-white rounded-lg w-full h-[20px] flex items-center justify-center hover:bg-red-700 pt-3"
+            className="bg-red-500 text-white rounded-lg w-full h-[20px] flex items-center justify-center hover:bg-red-700"
             title="Delete Image"
           >
             Delete Image
