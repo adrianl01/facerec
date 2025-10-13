@@ -91,13 +91,13 @@ export default function ImageDropzone() {
     const chosen = selected[0];
     resizeImage(chosen);
     if (!chosen.type.startsWith("image/")) {
-      setError("Solo se permiten archivos de imagen.");
+      setError("Image files only.");
       setFile(null);
       return;
     }
 
     if (chosen.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`El archivo supera los ${MAX_SIZE_MB} MB permitidos.`);
+      setError(`The maximum allowed file size is${MAX_SIZE_MB}MB.`);
       setFile(null);
       return;
     }
@@ -211,6 +211,13 @@ export default function ImageDropzone() {
               );
             })}
           </ul>
+        </div>
+      )}
+      {!loading && detections.length == 0 && (
+        <div className="bg-gray-800 text-gray-200 p-4 rounded-lg w-full md:w-3xs text-sm">
+          <p className="font-semibold text-center items-center">
+            {detections.length} faces detected
+          </p>
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import * as faceapi from "face-api.js";
 import * as tf from "@tensorflow/tfjs";
 import MyButton from "./ui/Button";
 import FacialInfo from "./FacialInfo";
+import { Play, Square, FlipHorizontal, FlipVertical } from "lucide-react";
 
 export default function WebCam() {
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function WebCam() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [expressions, setExpressions] = useState<string>("");
+  const [isMirrored, setIsMirrored] = useState(true); // 👈 nuevo estado
 
   const loadModels = async () => {
     const MODEL_URL = "/models";
@@ -66,7 +68,6 @@ export default function WebCam() {
 
   const stopCamera = () => {
     if (!streamRef.current) return;
-
     streamRef.current.getTracks().forEach((track) => track.stop());
     videoRef.current!.srcObject = null;
     setIsStreaming(false);
@@ -93,7 +94,10 @@ export default function WebCam() {
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
-    const displaySize = { width: canvas.width, height: canvas.height };
+    const displaySize = {
+      width: canvas.clientWidth,
+      height: canvas.clientHeight,
+    };
     faceapi.matchDimensions(canvas, displaySize);
 
     const runDetection = async () => {
@@ -109,11 +113,24 @@ export default function WebCam() {
         .withFaceLandmarks()
         .withFaceExpressions();
       tf.engine().endScope();
+
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 👇 aplicar efecto espejo si está activado
+      if (isMirrored) {
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.translate(-canvas.width, 0);
+      }
+
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
       faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+
+      if (isMirrored) ctx.restore();
+
       resizedDetections.forEach((d, i) => {
         const { expressions } = d;
         const maxExpression = Object.entries(expressions).reduce(
@@ -126,11 +143,14 @@ export default function WebCam() {
           )}%)`
         );
       });
+
       requestAnimationFrame(runDetection);
     };
 
-    setTimeout(runDetection, 100); // 100 ms = ~10 FPS
+    setTimeout(runDetection, 100);
   };
+
+  const toggleMirror = () => setIsMirrored((prev) => !prev); // 👈 función toggle
 
   return (
     <div className="p-1">
@@ -139,7 +159,10 @@ export default function WebCam() {
           ref={videoRef}
           autoPlay
           playsInline
-          className="w-full h-full object-cover"
+          // 👇 aplica el espejo visualmente también al video
+          className={`w-full h-full object-cover ${
+            isMirrored ? "scale-x-[-1]" : ""
+          }`}
         />
         <canvas
           ref={canvasRef}
@@ -152,17 +175,27 @@ export default function WebCam() {
         )}
       </div>
 
-      <div className="flex flex-row w-full mt-4 gap-3">
-        {isStreaming ? (
-          <MyButton className="mt-4" handler={stopCamera}>
-            Stop
+      <div className="flex flex-row w-full mt-4 gap-3 flex-wrap">
+        <FacialInfo>{expressions}</FacialInfo>
+        <div className="flex gap-1.5 w-full justify-between">
+          {isStreaming ? (
+            <MyButton handler={stopCamera} title="Stop">
+              <Square className="w-5 h-5" />
+            </MyButton>
+          ) : (
+            <MyButton handler={startCamera} title="Start">
+              <Play className="w-5 h-5" />
+            </MyButton>
+          )}
+
+          <MyButton handler={toggleMirror} title="Toggle Mirror">
+            <FlipHorizontal
+              className={`w-5 h-5 transition-transform ${
+                isMirrored ? "opacity-100" : "opacity-60"
+              }`}
+            />
           </MyButton>
-        ) : (
-          <MyButton className="mt-4" handler={startCamera}>
-            Start
-          </MyButton>
-        )}
-        <FacialInfo children={expressions} />
+        </div>
       </div>
     </div>
   );
