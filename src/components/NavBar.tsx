@@ -8,7 +8,7 @@ export default function NavBar() {
   const dispatch = useDispatch<AppDispatch>();
   const selectedOption = useSelector((state: RootState) => state.ui.isWebCam);
   return (
-    <nav className="w-full p-4 bg-gray-800 text-white flex justify-center gap-2 items-center">
+    <nav className="w-full p-4 bg-gray-400 flex justify-center gap-2 items-center">
       <MyButton
         className={selectedOption === true ? "bg-blue-600" : ""}
         handler={() => dispatch(setisWebCam(true))}

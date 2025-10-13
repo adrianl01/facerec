@@ -3,9 +3,21 @@ import { useRef, useState, useEffect } from "react";
 import * as faceapi from "face-api.js";
 import * as tf from "@tensorflow/tfjs";
 import MyButton from "./ui/Button";
+import FacialInfo from "./FacialInfo";
 
 export default function WebCam() {
-  tf.setBackend("cpu");
+  useEffect(() => {
+    (async () => {
+      tf.engine().registryFactory;
+      if (tf.engine().registryFactory["webgl"]) {
+        await tf.setBackend("webgl");
+      } else {
+        await tf.setBackend("cpu");
+      }
+      await tf.ready();
+      console.log("TF backend:", tf.getBackend());
+    })();
+  }, []);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,6 +25,7 @@ export default function WebCam() {
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [expressions, setExpressions] = useState<string>("");
 
   const loadModels = async () => {
     const MODEL_URL = "/models";
@@ -65,6 +78,16 @@ export default function WebCam() {
     }
   };
 
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) stopCamera();
+      else if (isStreaming) startCamera();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
+  }, [isStreaming]);
+
   const detectFaces = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -74,44 +97,39 @@ export default function WebCam() {
     faceapi.matchDimensions(canvas, displaySize);
 
     const runDetection = async () => {
+      tf.engine().startScope();
       const detections = await faceapi
-        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        .detectAllFaces(
+          video,
+          new faceapi.TinyFaceDetectorOptions({
+            inputSize: 160,
+            scoreThreshold: 0.5,
+          })
+        )
         .withFaceLandmarks()
         .withFaceExpressions();
+      tf.engine().endScope();
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
-      faceapi.draw.drawDetections(canvas, resizedDetections);
       faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-
       resizedDetections.forEach((d, i) => {
         const { expressions } = d;
         const maxExpression = Object.entries(expressions).reduce(
           (a, b) => (b[1] > a[1] ? b : a),
           ["neutral", 0]
         );
-        console.log(
-          `Face ${i}: ${maxExpression[0]} (${(maxExpression[1] * 100).toFixed(
+        setExpressions(
+          `Face ${++i}: ${maxExpression[0]} (${(maxExpression[1] * 100).toFixed(
             0
           )}%)`
         );
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "red";
-        ctx.fillText(
-          `${maxExpression[0]} (${(maxExpression[1] * 100).toFixed(0)}%)`,
-          d.detection.box.x,
-          d.detection.box.y - 10
-        );
       });
-
       requestAnimationFrame(runDetection);
     };
 
-    runDetection();
+    setTimeout(runDetection, 100); // 100 ms = ~10 FPS
   };
 
   return (
@@ -134,7 +152,7 @@ export default function WebCam() {
         )}
       </div>
 
-      <div className="flex flex-row w-full mt-4">
+      <div className="flex flex-row w-full mt-4 gap-3">
         {isStreaming ? (
           <MyButton className="mt-4" handler={stopCamera}>
             Stop
@@ -144,6 +162,7 @@ export default function WebCam() {
             Start
           </MyButton>
         )}
+        <FacialInfo children={expressions} />
       </div>
     </div>
   );
