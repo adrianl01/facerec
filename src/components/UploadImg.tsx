@@ -97,7 +97,7 @@ export default function ImageDropzone() {
     }
 
     if (chosen.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`The maximum allowed file size is${MAX_SIZE_MB}MB.`);
+      setError(`The maximum allowed file size is ${MAX_SIZE_MB}MB.`);
       setFile(null);
       return;
     }
@@ -171,7 +171,7 @@ export default function ImageDropzone() {
           <div className="mt-4 flex flex-col rounded-lg relative w-full border-4 border-white items-center justify-center p-4 gap-4">
             <img
               src={preview}
-              alt="Vista previa"
+              alt="Preview"
               className="rounded-md object-cover shadow-md max-h-96"
             />
             <button

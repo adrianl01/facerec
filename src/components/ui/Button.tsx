@@ -1,10 +1,10 @@
-type Props = {
+interface Props {
   children: React.ReactNode;
   className?: string;
   handler?: () => void;
   disable?: boolean;
   title?: string;
-};
+}
 export default function MyButton({
   children,
   className,

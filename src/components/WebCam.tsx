@@ -4,7 +4,7 @@ import * as faceapi from "face-api.js";
 import * as tf from "@tensorflow/tfjs";
 import MyButton from "./ui/Button";
 import FacialInfo from "./FacialInfo";
-import { Play, Square, FlipHorizontal, FlipVertical } from "lucide-react";
+import { Play, Square, FlipHorizontal } from "lucide-react";
 
 export default function WebCam() {
   useEffect(() => {
