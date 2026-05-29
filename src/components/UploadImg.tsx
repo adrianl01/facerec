@@ -133,20 +133,20 @@ export default function ImageDropzone() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full md:flex-row md:justify-center mx-auto pb-3 md:pb-0 px-4">
+    <div className="w-full flex flex-col items-center gap-8">
       <div className="md:max-h-[80%]">
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={openFileDialog}
-          className={`w-full p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition
-          ${
-            isDragOver
-              ? "border-indigo-500 bg-indigo-50"
-              : "border-gray-500 bg-transparent"
-          }
-        `}
+          className={`w-full max-w-2xl p-10 border rounded-3xl text-center cursor-pointer transition-all duration-300
+${
+  isDragOver
+    ? "border-sky-400 bg-sky-400/10 scale-[1.01]"
+    : "border-white/10 bg-white/5 hover:bg-white/[0.07]"
+}
+`}
         >
           <input
             type="file"
@@ -168,7 +168,7 @@ export default function ImageDropzone() {
 
         {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
         {preview && (
-          <div className="mt-4 flex flex-col rounded-lg relative w-full border-4 border-white items-center justify-center p-4 gap-4">
+          <div className="mt-6 flex flex-col rounded-3xl relative w-full max-w-2xl border border-white/10 bg-white/5 p-5 gap-5 backdrop-blur-md">
             <img
               src={preview}
               alt="Preview"
@@ -192,7 +192,7 @@ export default function ImageDropzone() {
       )}
 
       {!loading && detections.length > 0 && (
-        <div className="bg-gray-800 text-gray-200 p-4 rounded-lg w-full md:w-3xs text-sm">
+        <div className="bg-white/5 border border-white/10 text-slate-200 p-6 rounded-3xl w-full max-w-2xl text-sm backdrop-blur-md">
           <p className="font-semibold mb-2">
             {detections.length} face(s) detected:
           </p>
@@ -214,7 +214,7 @@ export default function ImageDropzone() {
         </div>
       )}
       {!loading && detections.length == 0 && (
-        <div className="bg-gray-800 text-gray-200 p-4 rounded-lg w-full md:w-3xs text-sm">
+        <div className="bg-white/5 border border-white/10 text-slate-200 p-6 rounded-3xl w-full max-w-2xl text-sm backdrop-blur-md">
           <p className="font-semibold text-center items-center">
             {detections.length} faces detected
           </p>

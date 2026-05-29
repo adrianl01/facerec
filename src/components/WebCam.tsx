@@ -1,22 +1,22 @@
-"use client";
-import { useRef, useState, useEffect } from "react";
-import * as faceapi from "face-api.js";
-import * as tf from "@tensorflow/tfjs";
-import MyButton from "./ui/Button";
-import FacialInfo from "./FacialInfo";
-import { Play, Square, FlipHorizontal } from "lucide-react";
+'use client';
+import { useRef, useState, useEffect } from 'react';
+import * as faceapi from 'face-api.js';
+import * as tf from '@tensorflow/tfjs';
+import MyButton from './ui/Button';
+import FacialInfo from './FacialInfo';
+import { Play, Square, FlipHorizontal } from 'lucide-react';
 
 export default function WebCam() {
   useEffect(() => {
     (async () => {
       tf.engine().registryFactory;
-      if (tf.engine().registryFactory["webgl"]) {
-        await tf.setBackend("webgl");
+      if (tf.engine().registryFactory['webgl']) {
+        await tf.setBackend('webgl');
       } else {
-        await tf.setBackend("cpu");
+        await tf.setBackend('cpu');
       }
       await tf.ready();
-      console.log("TF backend:", tf.getBackend());
+      console.log('TF backend:', tf.getBackend());
     })();
   }, []);
 
@@ -26,17 +26,17 @@ export default function WebCam() {
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [expressions, setExpressions] = useState<string>("");
+  const [expressions, setExpressions] = useState<string>('');
   const [isMirrored, setIsMirrored] = useState(true); // 👈 nuevo estado
 
   const loadModels = async () => {
-    const MODEL_URL = "/models";
+    const MODEL_URL = '/models';
     await Promise.all([
       faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
       faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
       faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
       faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL),
+      faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
     ]);
     setModelsLoaded(true);
   };
@@ -62,7 +62,7 @@ export default function WebCam() {
         detectFaces();
       };
     } catch (err) {
-      console.error("Error accessing webcam:", err);
+      console.error('Error accessing webcam:', err);
     }
   };
 
@@ -74,7 +74,7 @@ export default function WebCam() {
 
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
     }
   };
@@ -84,9 +84,8 @@ export default function WebCam() {
       if (document.hidden) stopCamera();
       else if (isStreaming) startCamera();
     };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibility);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [isStreaming]);
 
   const detectFaces = async () => {
@@ -96,7 +95,7 @@ export default function WebCam() {
 
     const displaySize = {
       width: canvas.clientWidth,
-      height: canvas.clientHeight,
+      height: canvas.clientHeight
     };
     faceapi.matchDimensions(canvas, displaySize);
 
@@ -107,14 +106,14 @@ export default function WebCam() {
           video,
           new faceapi.TinyFaceDetectorOptions({
             inputSize: 160,
-            scoreThreshold: 0.5,
+            scoreThreshold: 0.5
           })
         )
         .withFaceLandmarks()
         .withFaceExpressions();
       tf.engine().endScope();
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -133,15 +132,8 @@ export default function WebCam() {
 
       resizedDetections.forEach((d, i) => {
         const { expressions } = d;
-        const maxExpression = Object.entries(expressions).reduce(
-          (a, b) => (b[1] > a[1] ? b : a),
-          ["neutral", 0]
-        );
-        setExpressions(
-          `Face ${++i}: ${maxExpression[0]} (${(maxExpression[1] * 100).toFixed(
-            0
-          )}%)`
-        );
+        const maxExpression = Object.entries(expressions).reduce((a, b) => (b[1] > a[1] ? b : a), ['neutral', 0]);
+        setExpressions(`Face ${++i}: ${maxExpression[0]} (${(maxExpression[1] * 100).toFixed(0)}%)`);
       });
 
       requestAnimationFrame(runDetection);
@@ -153,47 +145,46 @@ export default function WebCam() {
   const toggleMirror = () => setIsMirrored((prev) => !prev); // 👈 función toggle
 
   return (
-    <div className="p-1">
-      <div className="relative w-[360px] h-[259px] sm:w-[390px] sm:h-[289px] md:w-128 md:h-96 rounded-md border-8 border-gray-300 overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          // 👇 aplica el espejo visualmente también al video
-          className={`w-full h-full object-cover ${
-            isMirrored ? "scale-x-[-1]" : ""
-          }`}
-        />
-        <canvas
-          ref={canvasRef}
-          className="absolute top-0 left-0 w-full h-full z-10"
-        />
-        {!isStreaming && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-lg font-semibold">
-            Turn on Your Camera 😃
-          </div>
-        )}
+    <div className="w-full flex flex-col items-center">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+        <div className="relative w-[340px] h-[250px] sm:w-[420px] sm:h-[320px] md:w-[720px] md:h-[520px]">
+          <video ref={videoRef} autoPlay playsInline className={`w-full h-full object-cover ${isMirrored ? 'scale-x-[-1]' : ''}`} />
+
+          <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-10" />
+
+          {!isStreaming && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <div className="text-center">
+                <p className="text-2xl font-semibold text-white">Camera Disabled</p>
+
+                <p className="text-slate-300 mt-2">Start the camera to begin detection</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="flex flex-row w-full mt-4 gap-3 flex-wrap">
-        <FacialInfo>{expressions}</FacialInfo>
-        <div className="flex gap-1.5 w-full justify-between">
+      <div className="w-full max-w-3xl mt-6 space-y-4">
+        <FacialInfo>
+          <p className="text-center font-medium">{expressions || 'No facial expressions detected yet'}</p>
+        </FacialInfo>
+
+        <div className="flex gap-3 justify-center">
           {isStreaming ? (
             <MyButton handler={stopCamera} title="Stop">
               <Square className="w-5 h-5" />
+              Stop
             </MyButton>
           ) : (
             <MyButton handler={startCamera} title="Start">
               <Play className="w-5 h-5" />
+              Start
             </MyButton>
           )}
 
           <MyButton handler={toggleMirror} title="Toggle Mirror">
-            <FlipHorizontal
-              className={`w-5 h-5 transition-transform ${
-                isMirrored ? "opacity-100" : "opacity-60"
-              }`}
-            />
+            <FlipHorizontal className="w-5 h-5" />
+            Mirror
           </MyButton>
         </div>
       </div>
